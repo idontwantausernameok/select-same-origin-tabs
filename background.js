@@ -1,43 +1,40 @@
 /* global browser */
 
-//const temporary = browser.runtime.id.endsWith('@temporary-addon'); // debugging?
 const manifest = browser.runtime.getManifest();
 const extname = manifest.name;
-const extdesc = manifest.description
 
 browser.menus.create({
 	id: extname,
-	title: extdesc,
+	title: extname,
 	contexts: ["tab"],
-	onclick: async function(info, tab) {
-		if(info.menuItemId.startsWith(extname)){
-			const url = new URL(tab.url);
-			const tabs = await browser.tabs.query({
-				url: url.origin + "/*",
-				hidden: false
-			});
+	onclick: async (info, tab) => {
 
-			let tmp = {};
+        const url = new URL(tab.url);
 
-			//tmp[tab.windowId] = [tab.index];
+        const tabs = await browser.tabs.query({
+            url: url.origin + "/*",
+            hidden: false
+        });
 
-			tabs.forEach( (t) => {
-				if(t.id !== tab.id) {
-					if (typeof tmp[t.windowId] === 'undefined'){
-						tmp[t.windowId] = [];
-					}
-					tmp[t.windowId].push(t.index);
-				}
-			});
+        const winId2tabsIdx = new Map();
 
-			for (const [k,v] of Object.entries(tmp)) {
-				browser.tabs.highlight({
-					windowId: parseInt(k),
-					tabs: v,
-					populate: false
-				});
-			}
-		}
+        tabs.forEach( (t) => {
+            if(t.id !== tab.id) {
+                if(!winId2tabsIdx.has(t.windowId)){
+                    winId2tabsIdx.set(t.windowId, []);
+                }
+                winId2tabsIdx.get(t.windowId).push(t.index);
+
+            }
+        });
+
+        winId2tabsIdx.forEach( (tabsIdx, winId /*,map*/) => {
+            browser.tabs.highlight({
+                windowId: winId,
+                tabs: tabsIdx,
+                populate: false
+            });
+        });
 	}
 });
 
