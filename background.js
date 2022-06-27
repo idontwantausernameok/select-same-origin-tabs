@@ -1,3 +1,5 @@
+/* global browser */
+
 //const temporary = browser.runtime.id.endsWith('@temporary-addon'); // debugging?
 const manifest = browser.runtime.getManifest();
 const extname = manifest.name;
@@ -10,8 +12,8 @@ browser.menus.create({
 	onclick: async function(info, tab) {
 		if(info.menuItemId.startsWith(extname)){
 			const url = new URL(tab.url);
-			const tabs = await browser.tabs.query({ 
-				url: url.origin + "/*", 
+			const tabs = await browser.tabs.query({
+				url: url.origin + "/*",
 				hidden: false
 			});
 
@@ -23,7 +25,7 @@ browser.menus.create({
 				if(t.id !== tab.id) {
 					if (typeof tmp[t.windowId] === 'undefined'){
 						tmp[t.windowId] = [];
-					} 
+					}
 					tmp[t.windowId].push(t.index);
 				}
 			});
@@ -33,7 +35,7 @@ browser.menus.create({
 					windowId: parseInt(k),
 					tabs: v,
 					populate: false
-				}); 
+				});
 			}
 		}
 	}
