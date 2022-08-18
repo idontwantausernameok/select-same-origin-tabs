@@ -5,15 +5,15 @@
       "background.js"
     ]
   },
-  "description": "Select Other Same Origin Tabs",
+  "description": "Select Same Origin Tabs",
   "icons": {
 	  "128": "icon.png"
   },
   "manifest_version": 2,
-  "name": "Select Other Same Origin Tabs",
+  "name": "Select Same Origin Tabs",
   "permissions": [
     "tabs",
     "menus"
   ],
-  "version": "1.1.3"
+  "version": "1.1.8"
 }
