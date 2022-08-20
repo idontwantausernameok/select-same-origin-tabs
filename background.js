@@ -4,7 +4,6 @@ const manifest = browser.runtime.getManifest();
 const extname = manifest.name;
 
 browser.menus.create({
-	id: extname,
 	title: extname,
 	contexts: ["tab"],
 	onclick: async (info, tab) => {
