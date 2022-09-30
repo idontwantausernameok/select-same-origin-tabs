@@ -5,6 +5,15 @@
       "background.js"
     ]
   },
+  "browser_action": {
+  },
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "F1"
+      }
+    }
+  },
   "icons": {
 	  "128": "icon.png"
   },
@@ -14,5 +23,5 @@
     "tabs",
     "menus"
   ],
-  "version": "1.1.9"
+  "version": "1.2.9"
 }

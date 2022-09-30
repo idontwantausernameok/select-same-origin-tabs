@@ -3,24 +3,38 @@
 const manifest = browser.runtime.getManifest();
 const extname = manifest.name;
 
+async function onBAClicked(tab) {
+
+    const url = new URL(tab.url);
+    const tabIdxs = new Set();
+
+    tabIdxs.add(tab.index);
+
+    (await browser.tabs.query({
+        highlighted: true,
+        currentWindow: true
+    })).map( t => tabIdxs.add(t.index) );
+
+    (await browser.tabs.query({
+        url: url.origin + "/*",
+        hidden: false,
+        currentWindow: true
+    })).map( t => tabIdxs.add(t.index) );
+
+    browser.tabs.highlight({
+        windowId: tab.windowId,
+        tabs: [...tabIdxs],
+        populate: false
+    });
+}
+
 browser.menus.create({
-	title: extname,
+    title: extname,
 	contexts: ["tab"],
-	onclick: async (info, tab) => {
-
-        const url = new URL(tab.url);
-
-        const tabIdxs = (await browser.tabs.query({
-            url: url.origin + "/*",
-            hidden: false,
-            currentWindow: true
-        })).map( t => t.index );
-
-        browser.tabs.highlight({
-            windowId: tab.windowId,
-            tabs: tabIdxs,
-            populate: false
-        });
+	onclick: (info, tab) => {
+        onBAClicked(tab);
     }
 });
+
+browser.browserAction.onClicked.addListener(onBAClicked);
 
