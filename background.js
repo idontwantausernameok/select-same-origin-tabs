@@ -5,26 +5,34 @@ const extname = manifest.name;
 
 async function onBAClicked(tab) {
 
-    const url = new URL(tab.url);
+    const origin = (() => {
+            try {
+                const url = new URL(tab.url);
+                if( typeof url.origin === 'string' &&
+                    url.origin !== 'null'
+                ){
+                    return url.origin;
+                }
+            }catch(e){
+                console.error(e);
+            }
+            return null;
+    })();
+
+    if(origin === null){
+        return;
+    }
+
     const tabIdxs = [];
 
-    tabIdxs.push(tab.index);
+    tabIdxs.push(tab.index); // front
 
     (await browser.tabs.query({
-        highlighted: true,
-        currentWindow: true
-    })).map( t => {
-        if(!tabIdxs.includes(t.index)){
-            tabIdxs.push(t.index)
-        }
-    });
-
-    (await browser.tabs.query({
-        url: url.origin + "/*",
+        url: origin + "/*",
         hidden: false,
         currentWindow: true
     })).map( t => {
-        if(!tabIdxs.includes(t.index)){
+        if(t.index !== tab.index){
             tabIdxs.push(t.index)
         }
     });
