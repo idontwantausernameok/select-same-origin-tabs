@@ -6,24 +6,32 @@ const extname = manifest.name;
 async function onBAClicked(tab) {
 
     const url = new URL(tab.url);
-    const tabIdxs = new Set();
+    const tabIdxs = [];
 
-    tabIdxs.add(tab.index);
+    tabIdxs.push(tab.index);
 
     (await browser.tabs.query({
         highlighted: true,
         currentWindow: true
-    })).map( t => tabIdxs.add(t.index) );
+    })).map( t => {
+        if(!tabIdxs.includes(t.index)){
+            tabIdxs.push(t.index)
+        }
+    });
 
     (await browser.tabs.query({
         url: url.origin + "/*",
         hidden: false,
         currentWindow: true
-    })).map( t => tabIdxs.add(t.index) );
+    })).map( t => {
+        if(!tabIdxs.includes(t.index)){
+            tabIdxs.push(t.index)
+        }
+    });
 
     browser.tabs.highlight({
         windowId: tab.windowId,
-        tabs: [...tabIdxs],
+        tabs: tabIdxs,
         populate: false
     });
 }
